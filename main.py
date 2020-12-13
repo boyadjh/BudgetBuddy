@@ -1,25 +1,34 @@
 import tkinter as tk
-from profile import Profile
-from items import *
-import ui
 import pickle
+
+from profile import Profile
+import items
+import components.summary as summary
+
 
 SAVE_LOC = './profiles/'
 PROFILE_EXT = '.bbp' 
 
-class BudgetBuddy:
-	def __init__(self, gui):
-		self.gui = gui
-		self.gui.title("BudgetBuddy")
+class BudgetBuddy(tk.Frame):
+	def __init__(self, master):
+		tk.Frame.__init__(self, master)
+		self.master = master
+
 		self.p = self.loadProfile('user')
-		self.summ = ui.Summary(self.gui, 'Summary', self.p.items, self.addItem)
-		self.summ.pack(expand='true', fill='x')
+		self.p.items = []
+		self.p.items.append(items.Income(bal=500))
+		self.p.items.append(items.Checking(bal=100.2))
+		self.p.items.append(items.Credit(500, label="LOC", bal=140))
+		self.p.items.append(items.Credit(500, label="Visa", bal=200))
+		self.p.items.append(items.Goal(label="Credit Payoff", bal=100))
+		self.p.items.append(items.Goal(label="Save", bal=580))
+		self.p.items.append(items.Expense(label="Spending", bal=100))
+
+		self.s = summary.Summary(self, self.p.items)
+		self.s.pack()
 
 		self.saveProfile(self.p)
-
-	def addItem(self):
-		print(self.summ.e_newLabel.get() + ': ' + self.summ.e_newBal.get())
-
+		
 	def saveProfile(self, profile):
 		pickle.dump(profile, open(SAVE_LOC + profile.username + PROFILE_EXT, 'wb'))
 
@@ -29,7 +38,7 @@ class BudgetBuddy:
 
 def main():
 	root = tk.Tk()
-	bb = BudgetBuddy(root)
+	BudgetBuddy(root).pack(side="top", fill="both", expand=True)
 	root.mainloop()
 
 main()
