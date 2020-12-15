@@ -2,9 +2,10 @@ import tkinter as tk
 from components.budgetspread import BudgetSpread
 
 class Summary(tk.Frame):
-	def __init__(self, master, items):
+	def __init__(self, master, items, callback):
 		tk.Frame.__init__(self, master)
 		self.master = master
+		self.callback = callback
 
 		self.leftoverVal = tk.DoubleVar()
 
@@ -12,11 +13,14 @@ class Summary(tk.Frame):
 		self.spread = self.genSpread(items)
 		self.spread.pack(expand=True, fill='x')
 
-		
-
 		self.genLeftover().pack(expand=True, fill='x')
 
+		self.leftoverVal.trace_add('write', self.leftoverUpdate)
+
 		#self.updateLeftover()
+
+	def leftoverUpdate(self, var, arg, mode):
+		self.callback(self.spread.getItems())
 
 	def genLabel(self):
 		return tk.Label(self, text='Summary')

@@ -14,23 +14,24 @@ class BudgetBuddy(tk.Frame):
 		tk.Frame.__init__(self, master)
 		self.master = master
 
-		self.p = self.loadProfile('user')
-		self.p.items = []
-		self.p.items.append(items.Income(bal=500))
-		self.p.items.append(items.Checking(bal=100.2))
-		self.p.items.append(items.Credit(500, label="LOC", bal=140))
-		self.p.items.append(items.Credit(500, label="Visa", bal=200))
-		self.p.items.append(items.Goal(label="Credit Payoff", bal=100))
-		self.p.items.append(items.Goal(label="Save", bal=580))
-		self.p.items.append(items.Expense(label="Spending", bal=100))
+		self.master.protocol('WM_DELETE_WINDOW', self.close)
 
-		self.s = summary.Summary(self, self.p.items)
+		self.profile_name = 'user'
+
+		self.p = self.loadProfile(self.profile_name)
+
+		self.s = summary.Summary(self, self.p.items, self.updateProfileItems)
 		self.s.pack()
 
-		self.saveProfile(self.p)
+	def updateProfileItems(self, items):
+		self.p.items = items
 		
-	def saveProfile(self, profile):
-		pickle.dump(profile, open(SAVE_LOC + profile.username + PROFILE_EXT, 'wb'))
+	def close(self):
+		self.saveProfile()
+		self.master.destroy()
+
+	def saveProfile(self):
+		pickle.dump(self.p, open(SAVE_LOC + self.p.username + PROFILE_EXT, 'wb'))
 
 	def loadProfile(self, username):
 		return pickle.load(open(SAVE_LOC + username + PROFILE_EXT, 'rb'))
