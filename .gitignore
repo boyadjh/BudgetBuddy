@@ -1,0 +1,4 @@
+components
+__pycache__
+profiles
+!profiles/user.bbp
